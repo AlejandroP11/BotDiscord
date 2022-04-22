@@ -1,9 +1,8 @@
-import discord4j.common.util.Snowflake;
+
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
@@ -23,29 +22,28 @@ public class Main {
                 .color(Color.BLUE)
                 .title("Saludito")
                 .url("https://www.youtube.com/watch?v=EyrflENzpww")
-                .author("Aleajandro", "https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg", "https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg")
+                .author("Alejandro", "https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg", "https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg")
                 .description("Vegetita saludando")
                 .thumbnail("https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg")
-                .addField("Saludito vegetal", "del vegetita", false)
-                .addField("\u200B", "\u200B", false)
-                .addField("Hola muy buenas a todos", "guapisimos", true)
                 .image("https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg")
                 .timestamp(Instant.now())
-                .footer("hasta la proxima", "https://i.ytimg.com/vi/SLwXbNQZjvk/maxresdefault.jpg")
                 .build();
 
         gateway.on(MessageCreateEvent.class).subscribe(event -> {
             final Message message = event.getMessage();
+            //si el mensaje recibido es !ping
             if ("!ping".equals(message.getContent())) {
                 final MessageChannel channel = message.getChannel().block();
                 channel.createMessage("Pong!").block();
             }
 
-            if ("Un saludito".equals(message.getContent())){
+            //si el mensaje recibido es un saludito
+            if ("Un saludito".equalsIgnoreCase(message.getContent())){
                 final MessageChannel channel = message.getChannel().block();
                 channel.createMessage(embed).block();
             }
 
+            //si el mensaje es !files
             if ("!files".equals(message.getContent())){
                 File file = new File("/home/dam1/cod/imagenes");
                 File files[] = file.listFiles();
