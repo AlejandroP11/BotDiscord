@@ -112,9 +112,9 @@ public class Main {
                     channel.createMessage(files[i].getName()).block();
                 }
             }
-            //si el mensaje es !buscar
-            if("!buscar".equals(message.getContent())){
-                final MessageChannel channel = message.getChannel().block();
+            //si el mensaje es !vegeta
+
+            if("!vegeta".equals(message.getContent())){
                 final NetHttpTransport HTTP_TRANSPORT;
                 try {
                     HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -122,15 +122,37 @@ public class Main {
                             .setApplicationName(APPLICATION_NAME)
                             .build();
                     FileList result = service.files().list()
-                            .setQ("mimeType='image/jpeg' or mimeType='application/pdf'")
+                            .setQ("name contains 'BotImagenes' and mimeType = 'application/vnd.google-apps.folder'")
+                            .setSpaces("drive")
                             .setFields("nextPageToken, files(id, name)")
                             .execute();
                     List<com.google.api.services.drive.model.File> files = result.getFiles();
                     if (files == null || files.isEmpty()) {
-                        channel.createMessage("Archivos no encontrados");
+                        System.out.println("No files found.");
                     } else {
+                        String dirImagenes = null;
+                        System.out.println("Files:");
                         for (com.google.api.services.drive.model.File file : files) {
-                            channel.createMessage(file.getName()).block();
+                            System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                            dirImagenes = file.getId();
+                        }
+                        FileList resultImagenes= service.files().list()
+                                .setQ("name contains 'vegeta' and parents in '" + dirImagenes + "'")
+                                .setSpaces("drive")
+                                .setFields("nextPageToken, files(id, name)")
+                                .execute();
+                        List<com.google.api.services.drive.model.File> filesImagenes = resultImagenes.getFiles();
+                        if(filesImagenes == null || filesImagenes.isEmpty())
+                            System.out.println("no files found.");
+                        else{
+                            for (com.google.api.services.drive.model.File file : filesImagenes) {
+                                System.out.printf("Imagen: %s\n", file.getName());
+                                OutputStream outputStream = new FileOutputStream("/home/dam1/cod/examen/aux.jpeg");
+                                service.files().get(file.getId())
+                                        .executeMediaAndDownloadTo(outputStream);
+                                outputStream.flush();
+                                outputStream.close();
+                            }
                         }
                     }
                 } catch (GeneralSecurityException e) {
