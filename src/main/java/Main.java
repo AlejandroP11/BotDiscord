@@ -112,41 +112,46 @@ public class Main {
                     channel.createMessage(files[i].getName()).block();
                 }
             }
-            //si el mensaje es !vegeta
-
+             //si el mensaje es !vegeta
             if("!vegeta".equals(message.getContent())){
+                //hace el build de un nuevo servicio autorizado de la API
                 final NetHttpTransport HTTP_TRANSPORT;
                 try {
                     HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
                     Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                             .setApplicationName(APPLICATION_NAME)
                             .build();
+                    //busca una capeta llamada BotImagenes dentro del drive
                     FileList result = service.files().list()
                             .setQ("name contains 'BotImagenes' and mimeType = 'application/vnd.google-apps.folder'")
                             .setSpaces("drive")
                             .setFields("nextPageToken, files(id, name)")
                             .execute();
                     List<com.google.api.services.drive.model.File> files = result.getFiles();
+                    //si no existe la carpeta nos avisa, saliendo por pantalla No files found
                     if (files == null || files.isEmpty()) {
                         System.out.println("No files found.");
-                    } else {
+                    } else { //si la carpeta si existe
                         String dirImagenes = null;
                         System.out.println("Files:");
                         for (com.google.api.services.drive.model.File file : files) {
                             System.out.printf("%s (%s)\n", file.getName(), file.getId());
-                            dirImagenes = file.getId();
+                            dirImagenes = file.getId(); ////guarda el nombre y el Id de la carpeta en el String dirImagenes
                         }
+                        //busca la imagen dentro del directorio encontrado
                         FileList resultImagenes= service.files().list()
                                 .setQ("name contains 'vegeta' and parents in '" + dirImagenes + "'")
                                 .setSpaces("drive")
                                 .setFields("nextPageToken, files(id, name)")
                                 .execute();
                         List<com.google.api.services.drive.model.File> filesImagenes = resultImagenes.getFiles();
+                        //si no encuentra la imagen nos avisa, saliendo por pantalla No image found
                         if(filesImagenes == null || filesImagenes.isEmpty())
-                            System.out.println("no files found.");
-                        else{
+                            System.out.println("No image found.");
+                        else{ //si encuentra la imagen
                             for (com.google.api.services.drive.model.File file : filesImagenes) {
                                 System.out.printf("Imagen: %s\n", file.getName());
+                                //guarda el 'stream' dentro del direcotrio aux.jpeg que tiene que existir
                                 OutputStream outputStream = new FileOutputStream("/home/dam1/cod/examen/aux.jpeg");
                                 service.files().get(file.getId())
                                         .executeMediaAndDownloadTo(outputStream);
