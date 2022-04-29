@@ -112,7 +112,7 @@ public class Main {
                     channel.createMessage(files[i].getName()).block();
                 }
             }
-             //si el mensaje es !descarga
+            //si el mensaje es !descarga
             if("!descarga".equals(message.getContent())){
                 //hace el build de un nuevo servicio autorizado de la API
                 final NetHttpTransport HTTP_TRANSPORT;
@@ -136,11 +136,11 @@ public class Main {
                         System.out.println("Files:");
                         for (com.google.api.services.drive.model.File file : files) {
                             System.out.printf("%s (%s)\n", file.getName(), file.getId());
-                            dirImagenes = file.getId(); ////guarda el nombre y el Id de la carpeta en el String dirImagenes
+                            dirImagenes = file.getId(); //guarda el nombre y el Id de la carpeta en el String dirImagenes
                         }
-                        //busca la imagen dentro del directorio encontrado
+                        //busca la imagen, cuyo nombre contenga vegeta, dentro del directorio encontrado
                         FileList resultImagenes= service.files().list()
-                                .setQ("name contains 'bot' and parents in '" + dirImagenes + "'")
+                                .setQ("name contains 'vegeta' and parents in '" + dirImagenes + "'")
                                 .setSpaces("drive")
                                 .setFields("nextPageToken, files(id, name)")
                                 .execute();
