@@ -29,7 +29,7 @@ import java.util.List;
 public class Main {
 
     /** Application name. */
-    private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
+    private static final String APPLICATION_NAME = "BotDiscord";
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     /** Directory to store authorization tokens for this application. */
@@ -39,7 +39,7 @@ public class Main {
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY);
+    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
     /**
@@ -63,7 +63,7 @@ public class Main {
                 .setAccessType("offline")
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("964719180311-46p8bmj564j907ce3069dnd79pus9nl5.apps.googleusercontent.com");
+        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("964719180311-s8gorojujs61vjce2cj183d1mhr11urv.apps.googleusercontent.com");
         //returns an authorized Credential object.
         return credential;
     }
@@ -112,8 +112,8 @@ public class Main {
                     channel.createMessage(files[i].getName()).block();
                 }
             }
-             //si el mensaje es !vegeta
-            if("!vegeta".equals(message.getContent())){
+             //si el mensaje es !descarga
+            if("!descarga".equals(message.getContent())){
                 //hace el build de un nuevo servicio autorizado de la API
                 final NetHttpTransport HTTP_TRANSPORT;
                 try {
@@ -140,7 +140,7 @@ public class Main {
                         }
                         //busca la imagen dentro del directorio encontrado
                         FileList resultImagenes= service.files().list()
-                                .setQ("name contains 'vegeta' and parents in '" + dirImagenes + "'")
+                                .setQ("name contains 'bot' and parents in '" + dirImagenes + "'")
                                 .setSpaces("drive")
                                 .setFields("nextPageToken, files(id, name)")
                                 .execute();
