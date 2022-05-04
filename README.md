@@ -1,4 +1,4 @@
-# BotDiscord
+# BotDiscord y ApiDrive
 Creación de un Bot de Discord, en su desarrollo se utilizan las librerías discord4j, que se encarga de la conexión y la 
 creación y recepción de mensajes del bot aquí creado; además cuenta con la librería com.google.api-client:google-api-client
 la cual se utiliza para la conexión de la aplicación con Google Drive con su consiguiente mensaje mandado por Discord. 
