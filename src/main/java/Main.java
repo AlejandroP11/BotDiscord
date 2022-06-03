@@ -166,7 +166,23 @@ public class Main {
                     e.printStackTrace();
                 }
             }
-        });
+            //si el comando es pdf
+            if("/pdf".equals(message.getContent())) {
+                //hace el build de un nuevo servicio autorizado de la API
+                final NetHttpTransport HTTP_TRANSPORT;
+                try {
+                    HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+                    Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                            .setApplicationName(APPLICATION_NAME)
+                            .build();
+
+                } catch (GeneralSecurityException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            });
         gateway.onDisconnect().block();
     }
 }
