@@ -166,7 +166,64 @@ public class Main {
                     e.printStackTrace();
                 }
             }
-        });
+            //si el comando es pdf
+            if("/pdf".equals(message.getContent())) {
+                //hace el build de un nuevo servicio autorizado de la API
+                final NetHttpTransport HTTP_TRANSPORT;
+                try {
+                    //nos conectamos con la API de Discord
+                    HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+                    Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                            .setApplicationName(APPLICATION_NAME)
+                            .build();
+                    //busca una capeta llamada BotImagenes dentro del drive
+                    FileList result = service.files().list()
+                            .setQ("name contains 'BotImagenes' and mimeType = 'application/vnd.google-apps.folder'")
+                            .setSpaces("drive")
+                            .setFields("nextPageToken, files(id, name)")
+                            .execute();
+                    List<com.google.api.services.drive.model.File> files = result.getFiles();
+                    //si no existe la carpeta nos avisa, saliendo por pantalla No files found
+                    if (files == null || files.isEmpty()) {
+                        System.out.println("No files found.");
+                    } else { //si la carpeta si existe
+                        String dirDOC = null;
+                        System.out.println("Files:");
+                        for (com.google.api.services.drive.model.File file : files) {
+                            System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                            dirDOC = file.getId(); //guarda el nombre y el Id de la carpeta en el String dirDOC
+                        }
+                        //busca la imagen, cuyo nombre contenga vegeta, dentro del directorio encontrado
+                        FileList resultPDF= service.files().list()
+                                .setQ("name contains 'Ejecutables e instaladores' and parents in '" + dirDOC + "'")
+                                .setSpaces("drive")
+                                .setFields("nextPageToken, files(id, name)")
+                                .execute();
+                        List<com.google.api.services.drive.model.File> filesPDF = resultPDF.getFiles();
+                        //si no encuentra el doc nos avisa, saliendo por pantalla No doc found
+                        if(filesPDF == null || filesPDF.isEmpty())
+                            System.out.println("No doc found.");
+                        else{ //si encuentra eñ doc
+                            for (com.google.api.services.drive.model.File file : filesPDF) {
+                                System.out.printf("Doc: %s\n", file.getName());
+
+                                //guarda el doc
+                                OutputStream outputStream = new FileOutputStream("/home/dam1/cod/examen/doc.pdf");
+                                String id = String.valueOf(service.files().get(file.getId()));
+                                service.files().export(id, "application/msword")
+                                        .executeMediaAndDownloadTo(outputStream);
+                                outputStream.flush();
+                                outputStream.close();
+                            }
+                        }
+                    }
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            });
         gateway.onDisconnect().block();
     }
 }
