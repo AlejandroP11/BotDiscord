@@ -19,7 +19,6 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
-
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
